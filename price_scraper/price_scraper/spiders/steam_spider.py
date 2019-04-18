@@ -19,7 +19,7 @@ class SteamSpider(scrapy.Spider):
 		if query_result:
 			# Assemble response object.
 			resp_obj = {'title': query_result.css('.title::text').get(),
-			            'cost': query_result.css('.col.search_price_discount_combined::attr(data-price-final)').get()}
+			            'cost': int(query_result.css('.col.search_price_discount_combined::attr(data-price-final)').get())}
 
 			# Convert dict to JSON.
 			json_resp = json.dumps(resp_obj)
