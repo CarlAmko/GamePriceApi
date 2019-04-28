@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	// Create spiders
+	// Create all spiders
 	createSpiders()
 
 	r := gin.Default()

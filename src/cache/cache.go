@@ -11,9 +11,9 @@ import (
 // Env -- parsed environment variables from .env file
 var Env, _ = godotenv.Read()
 
-var redisClient = redis.NewClient(&redis.Options{
-	Addr: fmt.Sprintf("%s:%s", Env["REDIS_HOST"], Env["REDIS_PORT"]),
-})
+// Create a new Redis client
+var parsedConnectionOptions, _ = redis.ParseURL(Env["REDIS_URL"])
+var redisClient = redis.NewClient(parsedConnectionOptions)
 
 // Default cache time to 1 hour
 var cacheTime, _ = time.ParseDuration("1h")
