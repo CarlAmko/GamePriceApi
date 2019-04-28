@@ -65,10 +65,6 @@ func (ss SteamSpider) Search(searchTerm string) string {
 		}
 	})
 
-	clone.OnScraped(func (r * colly.Response) {
-		r.Request.Abort()
-	})
-
 	// Visit the assembled search URL
 	clone.Visit(searchURL)
 	clone.Wait()
