@@ -38,28 +38,42 @@ func (ss SteamSpider) assembleSearchURL(searchTerm string) string {
 
 // Search -- initiate a search using the given searchTerm; return a JSON-encoded CrawlResult
 func (ss SteamSpider) Search(searchTerm string) string {
+	// clone the collector for this crawl
+	clone := Collector.Clone()
+
 	searchURL := ss.assembleSearchURL(searchTerm)
-	fmt.Printf("Visiting %s\n", searchURL)
+	clone.OnRequest(func(r *colly.Request) {
+		// notify visiting
+		fmt.Printf("Visiting %s\n", searchURL)
+	})
 
-	// create a channel to return the CrawlResult
-	resultChannel := make(chan string)
+	// default to finding no results
+	result := fmt.Sprintf("No result found for '%s'", searchTerm)
 
-	Collector.OnHTML(ss.Selector(), func(e *colly.HTMLElement) {
+	clone.OnHTML(ss.Selector(), func(e *colly.HTMLElement) {
 		name := e.ChildText(".title")
 		price, _ := strconv.Atoi(e.ChildAttr(".col.search_price_discount_combined", "data-price-final"))
-		fmt.Printf("Result for '%s' -> {%s : %d}\n", searchTerm, name, price)
+		fmt.Printf("Found result for '%s' -> {%s : %d}\n", searchTerm, name, price)
 
 		crawlResult, err := json.Marshal(CrawlResult{name, price})
 		if err != nil {
-			resultChannel <- ""
+			// ensure that the channel doesn't block forever if JSON parsing errors
+			result = fmt.Sprintf("Could not parse response for '%s'", searchTerm)
 			log.Fatal(err)
+		} else {
+			result = string(crawlResult)
 		}
-		resultChannel <- string(crawlResult)
+	})
+
+	clone.OnScraped(func (r * colly.Response) {
+		r.Request.Abort()
 	})
 
 	// Visit the assembled search URL
-	Collector.Visit(searchURL)
+	clone.Visit(searchURL)
+	clone.Wait()
 
-	// wait for res channel to return
-	return <-resultChannel
+	// get first result from channel
+	fmt.Printf("Got result: %s\n", result)
+	return result
 }
