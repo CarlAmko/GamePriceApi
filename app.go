@@ -1,12 +1,11 @@
 package main
 
 import (
-	"cache"
 	"fmt"
 	"net/http"
-	"spiders"
 	"strings"
-
+	"GamePriceApi/cache"
+	"GamePriceApi/spiders"
 	"github.com/gin-gonic/gin"
 )
 
