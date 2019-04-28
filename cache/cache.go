@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"os"
 	"fmt"
 	"time"
 
@@ -8,11 +9,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Env -- parsed environment variables from .env file
-var Env, _ = godotenv.Read()
+// Load environment variables from .env file
+var _ = godotenv.Load()
 
 // Create a new Redis client
-var parsedConnectionOptions, _ = redis.ParseURL(Env["REDIS_URL"])
+var parsedConnectionOptions, _ = redis.ParseURL(os.Getenv("REDIS_URL"))
 var redisClient = redis.NewClient(parsedConnectionOptions)
 
 // Default cache time to 1 hour
