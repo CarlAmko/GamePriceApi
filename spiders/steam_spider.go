@@ -55,7 +55,7 @@ func (ss SteamSpider) Search(searchTerm string) string {
 		price, _ := strconv.Atoi(e.ChildAttr(".col.search_price_discount_combined", "data-price-final"))
 		fmt.Printf("Found result for '%s' -> {%s : %d}\n", searchTerm, name, price)
 
-		crawlResult, err := json.Marshal(CrawlResult{name, price})
+		crawlResult, err := json.Marshal(CrawlResult{ss.Name(), name, price})
 		if err != nil {
 			// ensure that the channel doesn't block forever if JSON parsing errors
 			result = fmt.Sprintf("Could not parse response for '%s'", searchTerm)

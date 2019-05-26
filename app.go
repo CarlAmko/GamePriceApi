@@ -1,11 +1,14 @@
 package main
 
 import (
+	"time"
+	"encoding/json"
+	"GamePriceApi/cache"
+	"GamePriceApi/spiders"
 	"fmt"
 	"net/http"
 	"strings"
-	"GamePriceApi/cache"
-	"GamePriceApi/spiders"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +17,7 @@ func main() {
 	createSpiders()
 
 	r := gin.Default()
-	r.GET("/crawl/:provider/:query", func(c *gin.Context) {
+	r.GET("/crawl/:query/:provider", func(c *gin.Context) {
 		provider := strings.ToLower(c.Param("provider"))
 		query := c.Param("query")
 
@@ -41,6 +44,41 @@ func main() {
 			// value is cached, just return it
 			c.JSON(http.StatusOK, res)
 		}
+	})
+
+	r.GET("/crawl/:query", func(c *gin.Context) {
+		query := c.Param("query")
+
+		// map all responses
+		results := make([]string, 0)
+
+		// query all spiders
+		for provider, spider := range spiders.Spiders {
+			// first check if this result is cached
+			cachedResult, err := cache.Get(provider, query)
+
+			// if err is returned, then this value is not cached
+			if err != nil {
+				// run a search with given query
+				cachedResult = spider.Search(query)
+
+				// cache result
+				cache.Set(provider, query, cachedResult)
+			}
+
+			// filter out non-results
+			if !strings.Contains(strings.ToLower(cachedResult), "no result found") {
+				results = append(results, cachedResult)
+			}
+		}
+		fmt.Printf("%s\n", results)
+		// marshall results
+		resp := spiders.QueryAllResult{results, time.Now().Unix()}
+
+		jsonResult, _ := json.Marshal(resp)
+		fmt.Printf("%s\n", jsonResult)
+
+		c.JSON(http.StatusOK, string(jsonResult))
 	})
 
 	// listen and serve

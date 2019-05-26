@@ -55,7 +55,7 @@ func (hbs HBSpider) Search(searchTerm string) string {
 		price := gjson.Get(jsonString, "results.0.current_price.0").Num
 
 		if name != "" && price > 0.00 {
-			res, _ := json.Marshal(CrawlResult{name, int(price * 100)})
+			res, _ := json.Marshal(CrawlResult{hbs.Name(), name, int(price * 100)})
 			result = string(res)
 		}
 	})

@@ -17,8 +17,14 @@ type BaseSpider interface {
 
 // CrawlResult -- Return type resulting from a crawl
 type CrawlResult struct {
-	Name  string `json:"name"`
-	Price int    `json:"price"`
+	Provider string `json:"provider"`
+	Name     string `json:"name"`
+	Price    int    `json:"price"`
+}
+
+type QueryAllResult struct {
+	Results []string `json:"results"`
+	Time    int64    `json:"query_time"`
 }
 
 // Collector -- Singleton, reusable, asynchronous collector
