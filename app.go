@@ -87,5 +87,6 @@ func main() {
 
 func createSpiders() {
 	spiders.Spiders["steam"] = spiders.SteamSpider{}
+	spiders.Spiders["g2a"] = spiders.G2ASpider{}
 	spiders.Spiders["hb"] = spiders.HBSpider{}
 }
