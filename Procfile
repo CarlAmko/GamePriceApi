@@ -1,1 +1,1 @@
-web: bin/GamePriceApi
+web: python app.py

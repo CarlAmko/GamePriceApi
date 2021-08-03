@@ -1,3 +1,5 @@
 .vscode/
 .idea/
-.env
+venv/
+*.html
+__pycache__/
