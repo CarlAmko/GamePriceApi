@@ -1,0 +1,22 @@
+version: "2.4"
+
+services:
+  game-api:
+    build: .
+    container_name: game-api
+    mem_limit: 128m
+    ports:
+      - 5000:5000
+    depends_on:
+      - cache
+  cache:
+    mem_limit: 256m
+    container_name: game-api-cache
+    image: redis:alpine3.14
+    volumes:
+    - api-cache:/data
+    ports:
+    - 6379:6379
+
+volumes:
+  api-cache:

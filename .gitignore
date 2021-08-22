@@ -3,3 +3,4 @@
 venv/
 *.html
 __pycache__/
+*.egg-info/
